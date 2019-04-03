@@ -19,7 +19,7 @@ function LoginCtrl.OnCreate(obj)
 	gameObject=obj;
 	transform=gameObject.transform;
 	message=gameObject:GetComponent("LuaBehaviour");
-	--message:AddClick(LoginPanel.loginBtn,this.LoginBtnClick);
+	message:AddClick(LoginPanel.loginBtn,this.LoginBtnClick);
 end
 
 

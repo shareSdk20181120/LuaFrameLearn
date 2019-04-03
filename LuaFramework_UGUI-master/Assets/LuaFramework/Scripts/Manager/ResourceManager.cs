@@ -27,6 +27,8 @@ namespace LuaFramework {
         Dictionary<string, AssetBundleInfo> m_LoadedAssetBundles = new Dictionary<string, AssetBundleInfo>();
         Dictionary<string, List<LoadAssetRequest>> m_LoadRequests = new Dictionary<string, List<LoadAssetRequest>>();
 
+      
+
         class LoadAssetRequest {
             public Type assetType;
             public string[] assetNames;
@@ -35,15 +37,21 @@ namespace LuaFramework {
         }
 
         // Load AssetBundleManifest.
-        public void Initialize(string manifestName, Action initOK) {
-            m_BaseDownloadingURL = Util.GetRelativePath();
-            LoadAsset<AssetBundleManifest>(manifestName, new string[] { "AssetBundleManifest" }, delegate(UObject[] objs) {
-                if (objs.Length > 0) {
-                    m_AssetBundleManifest = objs[0] as AssetBundleManifest;
-                    m_AllManifest = m_AssetBundleManifest.GetAllAssetBundles();
-                }
-                if (initOK != null) initOK();
-            });
+        public void Initialize(string manifestName, Action initOK)
+        {
+            /*
+                        m_BaseDownloadingURL = Util.GetRelativePath();
+                        LoadAsset<AssetBundleManifest>(manifestName, new string[] { "AssetBundleManifest" }, delegate(UObject[] objs) {
+                            if (objs.Length > 0) {
+                                m_AssetBundleManifest = objs[0] as AssetBundleManifest;
+                                m_AllManifest = m_AssetBundleManifest.GetAllAssetBundles();
+                            }
+                            if (initOK != null) initOK();
+                        });
+                        */
+
+            if (initOK != null) initOK();
+
         }
 
         public void LoadPrefab(string abName, string assetName, Action<UObject[]> func) {
@@ -84,9 +92,10 @@ namespace LuaFramework {
         /// <summary>
         /// 载入素材
         /// </summary>
-        void LoadAsset<T>(string abName, string[] assetNames, Action<UObject[]> action = null, LuaFunction func = null) where T : UObject {
-            abName = GetRealAssetPath(abName);
-
+        void LoadAsset<T>(string abName, string[] assetNames, Action<UObject[]> action = null, LuaFunction func = null) where T : UObject
+        {
+          
+            abName = GetRealAssetPath(abName);            
             LoadAssetRequest request = new LoadAssetRequest();
             request.assetType = typeof(T);
             request.assetNames = assetNames;
@@ -204,11 +213,17 @@ namespace LuaFramework {
         /// <param name="abName"></param>
         /// <param name="isThorough"></param>
         public void UnloadAssetBundle(string abName, bool isThorough = false) {
+
+#if UNITY_EDITOR
+            //Game.ResManager.
+
+#else
             abName = GetRealAssetPath(abName);
             Debug.Log(m_LoadedAssetBundles.Count + " assetbundle(s) in memory before unloading " + abName);
             UnloadAssetBundleInternal(abName, isThorough);
             UnloadDependencies(abName, isThorough);
             Debug.Log(m_LoadedAssetBundles.Count + " assetbundle(s) in memory after unloading " + abName);
+#endif
         }
 
         void UnloadDependencies(string abName, bool isThorough) {

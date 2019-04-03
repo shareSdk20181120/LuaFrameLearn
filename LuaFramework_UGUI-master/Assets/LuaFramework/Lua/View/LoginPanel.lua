@@ -14,6 +14,6 @@ end
 function LoginPanel.InitPanel()
 	logWarn("LoginPanel.InitPanel");
 	this.loginBtn=transform:Find("LoginBtn").gameObject;
-	--this.nameInput=transform:FindChild("NameInput"):GetComponent("InputField");
-	--this.paInput=transform:FindChild("PasswordInput"):GetComponent("InputField");
+	this.nameInput=transform:Find("NameInput"):GetComponent("InputField");
+	this.paInput=transform:Find("PasswordInput"):GetComponent("InputField");
 end

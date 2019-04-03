@@ -25,16 +25,20 @@ namespace LuaFramework {
         public void CreatePanel(string name, LuaFunction func = null) {
             string assetName = name + "Panel";
             string abName = name.ToLower() + AppConst.ExtName;
-            Debug.LogError("name: " + name + "  "+ Parent.name);
+            //Debug.LogError("name: " + name + "  "+ Parent.name);
             if (Parent.Find(name) != null) return;
 
-#if ASYNC_MODE
+#if UNITY_EDITOR
+            // Debug.LogError("Editor");
+            GameObject go=Game.ResManager.LoadPrefab(assetName, EnumAssetType.UIPrefab, func);
+#elif ASYNC_MODE
+            Debug.LogError("异步模式");
             ResManager.LoadPrefab(abName, assetName, delegate(UnityEngine.Object[] objs) {
                 if (objs.Length == 0) return;
                 GameObject prefab = objs[0] as GameObject;
                 if (prefab == null) return;
 
-                GameObject go = Instantiate(prefab) as GameObject;
+                go = Instantiate(prefab) as GameObject;
                 go.name = assetName;
                 go.layer = LayerMask.NameToLayer("Default");
                 go.transform.SetParent(Parent);
@@ -49,8 +53,11 @@ namespace LuaFramework {
             GameObject prefab = ResManager.LoadAsset<GameObject>(name, assetName);
             if (prefab == null) return;
 
-            GameObject go = Instantiate(prefab) as GameObject;
+            go = Instantiate(prefab) as GameObject;
             go.name = assetName;
+            
+          
+#endif
             go.layer = LayerMask.NameToLayer("Default");
             go.transform.SetParent(Parent);
             go.transform.localScale = Vector3.one;
@@ -58,8 +65,7 @@ namespace LuaFramework {
             go.AddComponent<LuaBehaviour>();
 
             if (func != null) func.Call(go);
-            Debug.LogWarning("CreatePanel::>> " + name + " " + prefab);
-#endif
+            Debug.LogWarning("CreatePanel::>> " + name + " ");
         }
 
         /// <summary>
